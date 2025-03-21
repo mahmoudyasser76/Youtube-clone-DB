@@ -1,0 +1,70 @@
+USE Youtube
+GO
+
+CREATE TABLE Users (
+    user_is_id INT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE,
+    email VARCHAR(100) UNIQUE,
+    password_of_user VARCHAR(255),
+    profile_pic VARCHAR(255),
+);
+
+CREATE TABLE Videos (
+    video_id INT PRIMARY KEY,
+    user_is_id INT,
+    title VARCHAR(255),
+    duration INT,
+    views_of_video INT,
+    uploaded_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (user_is_id) REFERENCES Users(user_is_id)
+);
+CREATE TABLE Comments (
+    comment_id INT PRIMARY KEY,
+    video_id INT,
+    user_is_id INT,
+    comment_text VARCHAR(MAX),
+    created_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (video_id) REFERENCES Videos(video_id),
+    FOREIGN KEY (user_is_id) REFERENCES Users(user_is_id)
+);
+CREATE TABLE Likes (
+    like_id INT PRIMARY KEY,
+    user_is_id INT,
+    video_id INT,
+    like_status BIT,
+    created_at DATETIME DEFAULT GETDATE(),
+    UNIQUE(user_is_id, video_id),
+    FOREIGN KEY (user_is_id) REFERENCES Users(user_is_id),
+    FOREIGN KEY (video_id) REFERENCES Videos(video_id)
+);
+CREATE TABLE Subscriptions (
+    subscription_id INT PRIMARY KEY,
+    subscriber_id INT,
+    subscribed_to INT,
+    UNIQUE(subscriber_id, subscribed_to),
+    FOREIGN KEY (subscriber_id) REFERENCES Users(user_is_id),
+    FOREIGN KEY (subscribed_to) REFERENCES Users(user_is_id)
+);
+CREATE TABLE Playlists (
+    playlist_id INT PRIMARY KEY,
+    user_is_id INT,
+    playlist_name VARCHAR(255),
+    FOREIGN KEY (user_is_id) REFERENCES Users(user_is_id)
+);
+CREATE TABLE Playlist_Videos (
+    playlist_video_id INT PRIMARY KEY,
+    playlist_id INT,
+    video_id INT,
+    UNIQUE(playlist_id, video_id),
+    FOREIGN KEY (playlist_id) REFERENCES Playlists(playlist_id),
+    FOREIGN KEY (video_id) REFERENCES Videos(video_id)
+);
+
+SELECT 'sqlserver' dbms,t.TABLE_CATALOG,t.TABLE_SCHEMA,t.TABLE_NAME,c.COLUMN_NAME,c.ORDINAL_POSITION,c.DATA_TYPE,c.CHARACTER_MAXIMUM_LENGTH,n.CONSTRAINT_TYPE,k2.TABLE_SCHEMA,k2.TABLE_NAME,k2.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLES t LEFT JOIN INFORMATION_SCHEMA.COLUMNS c ON t.TABLE_CATALOG=c.TABLE_CATALOG AND t.TABLE_SCHEMA=c.TABLE_SCHEMA AND t.TABLE_NAME=c.TABLE_NAME LEFT JOIN(INFORMATION_SCHEMA.KEY_COLUMN_USAGE k JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS n ON k.CONSTRAINT_CATALOG=n.CONSTRAINT_CATALOG AND k.CONSTRAINT_SCHEMA=n.CONSTRAINT_SCHEMA AND k.CONSTRAINT_NAME=n.CONSTRAINT_NAME LEFT JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS r ON k.CONSTRAINT_CATALOG=r.CONSTRAINT_CATALOG AND k.CONSTRAINT_SCHEMA=r.CONSTRAINT_SCHEMA AND k.CONSTRAINT_NAME=r.CONSTRAINT_NAME)ON c.TABLE_CATALOG=k.TABLE_CATALOG AND c.TABLE_SCHEMA=k.TABLE_SCHEMA AND c.TABLE_NAME=k.TABLE_NAME AND c.COLUMN_NAME=k.COLUMN_NAME LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE k2 ON k.ORDINAL_POSITION=k2.ORDINAL_POSITION AND r.UNIQUE_CONSTRAINT_CATALOG=k2.CONSTRAINT_CATALOG AND r.UNIQUE_CONSTRAINT_SCHEMA=k2.CONSTRAINT_SCHEMA AND r.UNIQUE_CONSTRAINT_NAME=k2.CONSTRAINT_NAME WHERE t.TABLE_TYPE='BASE TABLE';
+
+
+
+
+
+
+
